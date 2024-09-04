@@ -79,6 +79,10 @@ struct Opt {
     /// kustomize.buildOptions for argocd-cm ConfigMap
     #[structopt(long, env)]
     kustomize_build_options: Option<String>,
+
+    // cluster name (only applicable to kind). Default: argocd-diff-preview
+    #[structopt(long, default_value = "argocd-diff-preview", env)]
+    cluster_name: String
 }
 
 #[derive(Debug)]
@@ -214,7 +218,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         panic!("Target branch folder does not exist");
     }
 
-    let cluster_name = "argocd-diff-preview";
+    let cluster_name = opt.cluster_name;
 
     match tool {
         ClusterTool::Kind => kind::create_cluster(&cluster_name).await?,

@@ -50,12 +50,7 @@ pub async fn install_argo_cd(options: ArgoCDOptions<'_>) -> Result<(), Box<dyn E
         }
     }
 
-    // Install Argo CD
-    let install_url = format!(
-        "https://raw.githubusercontent.com/argoproj/argo-cd/{}/manifests/install.yaml",
-        version
-    );
-    match run_command(&format!("kubectl -n argocd apply -f {}", install_url), None).await {
+    match run_command("kubectl -n argocd apply -k resources", None).await {
         Ok(_) => (),
         Err(e) => {
             error!("❌ Failed to install Argo CD");
@@ -90,7 +85,7 @@ pub async fn install_argo_cd(options: ArgoCDOptions<'_>) -> Result<(), Box<dyn E
     .await
     .expect("Failed to restart argocd-repo-server");
     run_command(
-        "kubectl -n argocd rollout status deployment/argocd-repo-server --timeout=60s",
+        "kubectl -n argocd rollout status deployment/argocd-repo-server --timeout=300s",
         None,
     )
     .await
